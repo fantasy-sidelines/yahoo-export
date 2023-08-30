@@ -1,5 +1,6 @@
 import base64
 from pathlib import Path
+from typing import Any
 
 import yaml
 from pydantic import BaseModel, HttpUrl, SecretStr, computed_field
@@ -13,7 +14,7 @@ class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
         self,
         field: FieldInfo,  # noqa: ARG002
         field_name: str,
-    ) -> tuple[any, str, bool]:
+    ) -> tuple[Any, str, bool]:
         encoding = self.config.get("env_file_encoding")  # noqa: F841
         with open(Path("yahoo_export_config.yaml")) as yaml_file:
             file_content_yaml = yaml.load(yaml_file, Loader=yaml.SafeLoader)
@@ -24,13 +25,13 @@ class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
         self,
         field_name: str,  # noqa: ARG002
         field: FieldInfo,  # noqa: ARG002
-        value: any,
+        value: Any,
         value_is_complex: bool,  # noqa: ARG002, FBT001
-    ) -> any:
+    ) -> Any:
         return value
 
-    def __call__(self) -> dict[str, any]:
-        d: dict[str, any] = {}
+    def __call__(self) -> dict[str, Any]:
+        d: dict[str, Any] = {}
 
         for field_name, field in self.settings_cls.model_fields.items():
             field_value, field_key, value_is_complex = self.get_field_value(field, field_name)
@@ -41,10 +42,11 @@ class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
         return d
 
 
+# @dataclass
 class OAuthHeaders(BaseModel):
-    Accept: str
-    Authorization: str
-    Content_Type: str
+    accept: str
+    authorization: str
+    content_type: str
 
 
 class Config(BaseSettings):
@@ -59,27 +61,27 @@ class Config(BaseSettings):
     data_cache_path: str | None
     game_code: str = "nfl"
     output_format: str = "json"
-    headers: OAuthHeaders = OAuthHeaders()
     current_nfl_season: int | None = 2023
     current_nfl_week: int | None = 0
+    league_info: dict[str, Any]
 
     @computed_field
     @property
-    def encoded_credentials(self) -> any:
+    def encoded_credentials(self) -> Any:
         return base64.b64encode(
             f"{self.yahoo_consumer_key.get_secret_value()}:{self.yahoo_consumer_secret.get_secret_value()}".encode()
         )
 
     @computed_field
     @property
-    def token_file_path(self) -> any:
+    def token_file_path(self) -> Any:
         if self.token_file_path is None:
             return str(Path("secrets/oauth_token.yaml").as_posix())
         return self.token_file_path
 
     @computed_field
     @property
-    def data_cache_path(self) -> any:
+    def data_cache_path(self) -> Any:
         if self.data_cache_path is None:
             data_cache_path = str((Path.cwd() / "data_cache").as_posix())
         mkdir_not_exists(data_cache_path)
@@ -87,11 +89,13 @@ class Config(BaseSettings):
 
     @computed_field
     @property
-    def headers(self) -> any:
+    def headers(self) -> Any:
         headers = OAuthHeaders(
-            Accept=f"application/{self.output_format}",
-            Authorization=f"Basic {self.encoded_credentials.decode()}",
-            Content_Type="application/x-www-form-urlencoded",
+            **{
+                "accept": f"application/{self.output_format}",
+                "authorization": f"Basic {self.encoded_credentials.decode()}",
+                "content_type": "application/x-www-form-urlencoded",
+            }
         )
         return headers
 
