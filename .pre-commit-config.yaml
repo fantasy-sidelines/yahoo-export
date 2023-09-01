@@ -37,7 +37,6 @@ repos:
 - hooks:
   - id: commitizen
   - id: commitizen-branch
-    stages:
-    - push
+    stages: [push]
   repo: https://github.com/commitizen-tools/commitizen
-  rev: v3.6.0
+  rev: master

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yahoo-export"
-dynamic = ["version"]
+version = "0.1.0"
 description = 'Export Yahoo Fantasy Football data from historical records and live data.'
 readme = "README.md"
 requires-python = ">=3.10"
@@ -109,10 +109,15 @@ all = [
 [tool.hatch.build.targets.sdist]
 exclude = [
   "/.github",
+  "/.pytest_cache",
+  "/.ruff_cache",
+  "/dist",
+  "/secrets",
+  "/yahoo_export_config.yaml",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["src/yahoo_export"]
 
 [tool.black]
 target-version = ["py310"]
@@ -243,7 +248,13 @@ exclude_lines = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
+version = "0.1.0"
+version_files = [
+    "src/__about__.py",
+    "pyproject.toml:version"
+]
 tag_format = "v$version"
 version_scheme = "pep440"
 version_provider = "pep621"
 update_changelog_on_bump = true
+changelog_incremental = true
