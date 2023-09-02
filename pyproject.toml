@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yahoo-export"
-version = "0.0.0"
+version = "0.0.1"
 description = 'Export Yahoo Fantasy Football data from historical records and live data.'
 readme = "README.md"
 requires-python = ">=3.10"
@@ -114,12 +114,12 @@ packages = ["src/yahoo_export"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.0"
+version = "0.0.1"
 version_files = [
-    "src/__about__.py",
+    "src/yahoo_export/__about__.py",
     "pyproject.toml:version"
 ]
-tag_format = "v$minor.$major.$patch$prerelease.$devrelease"
+tag_format = "v$version"
 version_scheme = "pep440"
 version_provider = "pep621"
 bump_message = "bump: version $current_version → $new_version"
