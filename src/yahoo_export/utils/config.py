@@ -52,14 +52,12 @@ class OAuthHeaders(BaseModel):
 
 class Config(BaseSettings):
     model_config = SettingsConfigDict(env_file_encoding="utf-8", secrets_dir="secrets")
-    yahoo_consumer_key: SecretStr = ""
-    yahoo_consumer_secret: SecretStr = ""
-    yahoo_base_url: HttpUrl = "https://fantasysports.yahooapis.com/fantasy/v2/"
-    authorize_endpoint: HttpUrl = "https://api.login.yahoo.com/oauth2/request_auth"
-    access_token_endpoint: HttpUrl = "https://api.login.yahoo.com/oauth2/get_token"
-    token_file_path: str | None
+    yahoo_consumer_key: SecretStr
+    yahoo_consumer_secret: SecretStr
+    yahoo_base_url: HttpUrl = HttpUrl("https://fantasysports.yahooapis.com/fantasy/v2/")
+    authorize_endpoint: HttpUrl = HttpUrl("https://api.login.yahoo.com/oauth2/request_auth")
+    access_token_endpoint: HttpUrl = HttpUrl("https://api.login.yahoo.com/oauth2/get_token")
     redirect_endpoint: HttpUrl | str = "oob"
-    data_cache_path: str | None
     game_code: str = "nfl"
     output_format: str = "json"
     current_nfl_season: int | None = 2023
@@ -85,6 +83,8 @@ class Config(BaseSettings):
     def data_cache_path(self) -> Any:
         if self.data_cache_path is None:
             data_cache_path = str((Path.cwd() / "data_cache").as_posix())
+        else:
+            data_cache_path = str((Path.cwd() / self.data_cache_path).as_posix())
         mkdir_not_exists(data_cache_path)
         return data_cache_path
 
