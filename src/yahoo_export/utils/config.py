@@ -13,10 +13,10 @@ from yahoo_export.utils.utils import mkdir_not_exists
 class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
     def get_field_value(
         self,
-        field: FieldInfo,  # noqa: ARG002
+        field: FieldInfo,
         field_name: str,
     ) -> tuple[Any, str, bool]:
-        encoding = self.config.get("env_file_encoding")  # noqa: F841
+        encoding = self.config.get("env_file_encoding")
         with open(Path("yahoo_export_config.yaml")) as yaml_file:
             file_content_yaml = yaml.load(yaml_file, Loader=yaml.SafeLoader)
         field_value = file_content_yaml.get(field_name)
@@ -24,10 +24,10 @@ class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
 
     def prepare_field_value(
         self,
-        field_name: str,  # noqa: ARG002
-        field: FieldInfo,  # noqa: ARG002
+        field_name: str,
+        field: FieldInfo,
         value: Any,
-        value_is_complex: bool,  # noqa: ARG002, FBT001
+        value_is_complex: bool,
     ) -> Any:
         return value
 
@@ -104,7 +104,7 @@ class Config(BaseSettings):
     def settings_customise_sources(
         cls,
         settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,  # noqa: ARG003
+        init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
