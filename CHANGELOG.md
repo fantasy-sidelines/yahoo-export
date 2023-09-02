@@ -1,20 +1,15 @@
-## Unreleased
-
-### Feat
-
-- new api call from authlib/requests
-- data parse module added
-- psql docker yahoo_data db set-up for ingestion, sqlalchemy models needed
-- adding postgres database
-- yahoo data models created.
+## v0.0.1.dev0 (2023-09-02)
 
 ### Fix
 
-- docker compose for pgsql working
-- docker compose
+- **commitizen-testing**: Learning how to use commitizen
 
-## v0.0.2 (2023-07-15)
+## v0.0.0 (2023-09-02)
 
 ### Feat
 
-- yahoo data extraction phase 1\nCreated base module to query data from Yahoo Fantasy Sports API using uberfastman/yfpy.
+- commitizen integration testing
+
+### Fix
+
+- **typing**: update typing references
