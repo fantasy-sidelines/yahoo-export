@@ -242,7 +242,7 @@ version_files = [
     "src/__about__.py",
     "pyproject.toml:version"
 ]
-tag_format = "v$version"
+tag_format = "v$minor.$major.$patch$prerelease.$devrelease"
 version_scheme = "pep440"
 version_provider = "pep621"
 update_changelog_on_bump = true
