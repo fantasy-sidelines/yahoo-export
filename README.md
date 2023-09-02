@@ -1,5 +1,17 @@
 # TODO
 
+[![Downloads](https://img.shields.io/pypi/dm/mypy)](empty)
+[![Stable Version](https://img.shields.io/pypi/v/mypy?color=blue)](empty)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![pypi](https://img.shields.io/pypi/v/ruff/0.0.287.svg)](empty)
+[![license](https://img.shields.io/pypi/l/ruff/0.0.287.svg)](empty)
+[![python versions](https://img.shields.io/pypi/pyversions/ruff/0.0.287.svg)](empty)
+[![Actions status](https://github.com/astral-sh/ruff-pre-commit/workflows/main/badge.svg)](empty)
+[![Build Status](https://github.com/python/mypy/actions/workflows/test.yml/badge.svg)](empty)
+[![Documentation Status](https://readthedocs.org/projects/mypy/badge/?version=latest)](empty)
+
 1. Data Loader:
     - Get Data from the yahoo api
     - Split accross seperate "Loaders" within Mage

@@ -7,7 +7,7 @@ name = "yahoo-export"
 version = "0.1.0"
 description = 'Export Yahoo Fantasy Football data from historical records and live data.'
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "3.10"
 license = "MIT"
 keywords = []
 authors = [
@@ -17,9 +17,9 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
+#   "Programming Language :: Python :: 3.7",
+#   "Programming Language :: Python :: 3.8",
+#   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
@@ -27,15 +27,15 @@ classifiers = [
 ]
 packages = [{include = "yahoo_export", from = "src"}]
 dependencies = [
-  "loguru>=0.7",
-  "pyyaml>=6.0",
-  "python-dotenv>=1.0",
-  "pydantic>=2.1",
-  "pydantic-settings>=2.0",
-  "requests>=2.3",
-  "authlib>=1.2",
-  "ratelimit>=2.2",
-  "pytz>=2023.3",
+  "loguru",
+  "pyyaml",
+  "python-dotenv",
+  "pydantic",
+  "pydantic-settings",
+  "requests",
+  "authlib",
+  "ratelimit",
+  "pytz",
 ]
 
 [project.urls]
@@ -46,24 +46,12 @@ Source = "https://github.com/unknown/yahoo-export"
 [tool.hatch.version]
 path = "src/yahoo_export/__about__.py"
 
-[tool.hatch.envs.default]
-dependencies = [
-  "loguru>=0.7",
-  "pyyaml>=6.0",
-  "python-dotenv>=1.0",
-  "pydantic>=2.1",
-  "pydantic-settings>=2.0",
-  "requests>=2.3",
-  "authlib>=1.2",
-  "ratelimit>=2.2",
-  "pytz>=2023.3",
-]
 
 [tool.hatch.envs.test]
 dependencies = [
-  "coverage[toml]>=1.11",
-  "pytest>=7.4",
-  "pytest-cov>=4.1"
+  "coverage[toml]",
+  "pytest",
+  "pytest-cov"
 ]
 
 [tool.hatch.envs.test.scripts]
@@ -79,15 +67,15 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.10", "3.11"]
 
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
-  "black>=23.7",
-  "mypy>=1.4",
-  "ruff>=0.0.278",
-  "bandit[toml]>=1.7",
+  "black",
+  "mypy",
+  "ruff",
+  "bandit[toml]",
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/yahoo_export tests}"
