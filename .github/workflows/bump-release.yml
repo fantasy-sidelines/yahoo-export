@@ -33,6 +33,7 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements-ci.txt
         cz bump --changelog --devrelease 1
+        git push --tags
 
     - uses: softprops/action-gh-release@v1
       name: Release
