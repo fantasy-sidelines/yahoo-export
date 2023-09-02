@@ -13,25 +13,22 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v3
-      name: Check out
-
+    - name: Check out
+      uses: actions/checkout@v3
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install hatch
-
+        cache: 'pip'
+        cache-dependency-path: 'requirements-ci.txt'
     - name: Build package
-      run: hatch build
-
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements-ci.txt
+        hatch build
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
-        password: ${{ secrets.PYPI_TOKEN }}
-        repository-url: https://pypi.org/p/yahoo-export
+        password: ${{ secrets.TEST_PYPI_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
