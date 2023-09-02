@@ -12,7 +12,7 @@ defaults:
 env:
   PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
   PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-#   TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+  TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
   PYPI_USERNAME: __token__
 
 jobs:
