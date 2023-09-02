@@ -9,6 +9,9 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 end_of_line = lf
 
+[*.yaml]
+indent_size = 2
+
 [*.md]
 trim_trailing_whitespace = false
 
@@ -16,5 +19,3 @@ trim_trailing_whitespace = false
 indent_style = tab
 trim_trailing_whitespace = false
 
-[*.yaml]
-indent_size = 2

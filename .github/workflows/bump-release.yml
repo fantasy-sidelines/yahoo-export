@@ -1,0 +1,36 @@
+name: Bump Version & Release
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  bump:
+    if: ${{ !startsWith(github.event.head_commit.message, 'bump:') }}
+    runs-on: [self-hosted]
+    name: Bump version, update changelog
+    permissions:
+      id-token: write
+
+    steps:
+
+    - uses: actions/checkout@v3
+      name: Check out
+      with:
+        token: "${{ secrets.PERSONAL_TOKEN }}"
+        fetch-depth: 0
+
+    - uses: commitizen-tools/commitizen-action@master
+      name: Create bump and changelog
+      with:
+        github_token: ${{ secrets.PERSONAL_TOKEN }}
+        changelog_increment_filename: CHANGELOG.md
+
+    - uses: softprops/action-gh-release@v1
+      name: Release
+      with:
+        body_path: "CHANGELOG.md"
+        tag_name: ${{ steps.cz.outputs.version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

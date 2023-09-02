@@ -11,8 +11,9 @@ from authlib.integrations.requests_client import OAuth2Auth, OAuth2Session
 from ratelimit import limits, sleep_and_retry
 from requests import Response
 from requests.exceptions import HTTPError
-from utils.config import config
-from utils.utils import YahooEndpoints, mkdir_not_exists
+
+from yahoo_export.utils.config import config
+from yahoo_export.utils.utils import YahooEndpoints, mkdir_not_exists
 
 mkdir_not_exists("secrets")
 

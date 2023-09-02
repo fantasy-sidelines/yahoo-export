@@ -6,7 +6,8 @@ import yaml
 from pydantic import BaseModel, HttpUrl, SecretStr, computed_field
 from pydantic.fields import FieldInfo
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
-from utils.utils import mkdir_not_exists
+
+from yahoo_export.utils.utils import mkdir_not_exists
 
 
 class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
