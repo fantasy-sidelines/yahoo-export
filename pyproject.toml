@@ -73,7 +73,7 @@ dependencies = [
   "bandit[toml]",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "pyright --install-types --non-interactive {args:src/yahoo_export tests}"
+typing = "pyright /src/yahoo_export/."
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
