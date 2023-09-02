@@ -7,9 +7,9 @@ name = "yahoo-export"
 version = "0.1.0"
 description = 'Export Yahoo Fantasy Football data from historical records and live data.'
 readme = "README.md"
-requires-python = "3.10"
-license = "MIT"
-keywords = []
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["yahoo", "fantasy", "football", "export", "data", "api"]
 authors = [
   { name = "Tim Cuddeback", email = "cuddebtj@gmail.com" },
 ]
@@ -17,13 +17,8 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
-#   "Programming Language :: Python :: 3.7",
-#   "Programming Language :: Python :: 3.8",
-#   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 packages = [{include = "yahoo_export", from = "src"}]
 dependencies = [
@@ -39,9 +34,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/unknown/yahoo-export#readme"
-Issues = "https://github.com/unknown/yahoo-export/issues"
-Source = "https://github.com/unknown/yahoo-export"
+Documentation = "https://github.com/fantasy-sidelines/yahoo-export#readme"
+Issues = "https://github.com/fantasy-sidelines/yahoo-export/issues"
+Source = "https://github.com/fantasy-sidelines/yahoo-export"
 
 [tool.hatch.version]
 path = "src/yahoo_export/__about__.py"
@@ -73,12 +68,12 @@ python = ["3.10", "3.11"]
 detached = true
 dependencies = [
   "black",
-  "mypy",
+  "pyright",
   "ruff",
   "bandit[toml]",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/yahoo_export tests}"
+typing = "pyright --install-types --non-interactive {args:src/yahoo_export tests}"
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
@@ -214,6 +209,12 @@ subprocess = [
   "subprocess.check_call",
   "subprocess.check_output"
 ]
+
+[tool.pyright]
+include = ["src/yahoo_export", "tests"]
+pythonVersion = "3.10"
+reportMissingImports = true
+reportMissingTypeStubs = false
 
 [tool.coverage.run]
 source_pkgs = ["yahoo_export", "tests"]

@@ -1,0 +1,15 @@
+commitizen
+hatch
+poetry
+black
+ruff
+pyright
+bandit[toml]
+pymarkdownlnt
+yamllint
+pytest
+pytest-cov
+coverage[toml]
+mkdocs
+mkdocs-material
+mkdocstrings-python
