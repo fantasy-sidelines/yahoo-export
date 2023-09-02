@@ -19,7 +19,7 @@ env:
 
 jobs:
   release:
-    if: !startsWith(github.event.head_commit.message, 'bump:')
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: [self-hosted]
     name: Bump version, update changelog, create release
     permissions:
