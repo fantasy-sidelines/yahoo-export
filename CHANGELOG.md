@@ -1,3 +1,9 @@
+## v0.1.3 (2023-09-03)
+
+### Fix
+
+- **config**: static typing bug fix
+
 ## v0.1.2 (2023-09-03)
 
 ### Fix
