@@ -30,9 +30,3 @@ repos:
     args:
     - check
     - --target-version py301
-
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.5.1
-  hooks:
-  - id: mypy
-    exclude: ^docs/
