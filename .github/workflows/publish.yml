@@ -26,7 +26,7 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements-ci.txt
         hatch build
-        hatch build
+        hatch publish
       env:
         HATCH_INDEX_USER: __token__
         HATCH_INDEX_AUTH: ${{ secrets.TEST_PYPI_TOKEN }}
