@@ -33,7 +33,7 @@ jobs:
         git config --global user.name "GitHub Actions"
         pip install --upgrade pip
         pip install -r requirements-ci.txt
-        cz bump --changelog --devrelease 1
+        cz bump --changelog
         git push --tags
         echo "TAG_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
 
