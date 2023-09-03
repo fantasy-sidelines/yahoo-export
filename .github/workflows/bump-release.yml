@@ -34,7 +34,7 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements-ci.txt
         cz bump --changelog
-        git push --tags
+        git push --follow-tags
         echo "TAG_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
 
     - uses: softprops/action-gh-release@v1
