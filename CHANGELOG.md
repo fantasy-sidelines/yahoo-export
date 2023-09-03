@@ -1,3 +1,9 @@
+## v0.1.5 (2023-09-03)
+
+### Fix
+
+- **cicd**: publish pipeline updates
+
 ## v0.1.4 (2023-09-03)
 
 ### Fix
