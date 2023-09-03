@@ -1,3 +1,39 @@
+## v0.1.8 (2023-09-03)
+
+### Fix
+
+- **cicd**: test pypi to prod pypi
+
+## v0.1.7 (2023-09-03)
+
+### Fix
+
+- **cicd**: publishing
+
+## v0.1.6 (2023-09-03)
+
+### Fix
+
+- **cicd**: publish workflow
+
+## v0.1.5 (2023-09-03)
+
+### Fix
+
+- **cicd**: publish pipeline updates
+
+## v0.1.4 (2023-09-03)
+
+### Fix
+
+- **cicd**: pipeline bug with reelease
+
+## v0.1.3 (2023-09-03)
+
+### Fix
+
+- **config**: static typing bug fix
+
 ## v0.1.2 (2023-09-03)
 
 ### Fix
