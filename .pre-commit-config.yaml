@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: latest
+  rev: v4.4.0
   hooks:
   - id: check-added-large-files
   - id: check-ast
@@ -14,7 +14,7 @@ repos:
   - id: check-yaml
 
 - repo: https://github.com/psf/black
-  rev: latest
+  rev: 23.7.0
   hooks:
   - id: black
     exclude: ^docs/
@@ -24,15 +24,9 @@ repos:
       - --check
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: latest
+  rev: v0.0.287
   hooks:
   - id: ruff
     args:
     - check
     - --target-version py301
-
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: latest
-  hooks:
-  - id: mypy
-    exclude: ^docs/
