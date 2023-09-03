@@ -1,3 +1,9 @@
+## v0.1.9 (2023-09-03)
+
+### Fix
+
+- **release**: final release for use
+
 ## v0.1.8 (2023-09-03)
 
 ### Fix
