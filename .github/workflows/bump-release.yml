@@ -13,6 +13,8 @@ jobs:
     permissions:
       id-token: write
       contents: write
+    outputs:
+        TAG_VERSION: ${{ steps.version.outputs.TAG_VERSION }}
 
     steps:
 
@@ -37,11 +39,21 @@ jobs:
         cz bump --changelog
         git push --follow-tags
         echo "TAG_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
+
+  release:
+    runs-on: [self-hosted]
+    needs: bump
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+
     - uses: softprops/action-gh-release@v1
       name: Release
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: CHANGELOG.md
-        tag_name: ${{ steps.version.outputs.TAG_VERSION }}
+        tag_name: ${{ needs.bump.outputs.TAG_VERSION }}
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
