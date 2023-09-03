@@ -1,3 +1,9 @@
+## v0.1.4 (2023-09-03)
+
+### Fix
+
+- **cicd**: pipeline bug with reelease
+
 ## v0.1.3 (2023-09-03)
 
 ### Fix
