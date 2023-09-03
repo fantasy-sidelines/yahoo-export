@@ -1,3 +1,9 @@
+## v0.1.8 (2023-09-03)
+
+### Fix
+
+- **cicd**: test pypi to prod pypi
+
 ## v0.1.7 (2023-09-03)
 
 ### Fix
