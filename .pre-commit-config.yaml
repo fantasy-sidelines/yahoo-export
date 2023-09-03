@@ -12,21 +12,12 @@ repos:
   - id: detect-private-key
   - id: check-toml
   - id: check-yaml
-
 - repo: https://github.com/psf/black
   rev: 23.7.0
   hooks:
   - id: black
     exclude: ^docs/
-    args:
-      - --line-length  120
-      - --target-version py301
-      - --check
-
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.0.287
   hooks:
   - id: ruff
-    args:
-    - check
-    - --target-version py301
