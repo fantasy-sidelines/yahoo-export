@@ -1,3 +1,9 @@
+## v0.1.10 (2023-09-04)
+
+### Fix
+
+- **config**: added default value to yahoo secrets
+
 ## v0.1.9 (2023-09-03)
 
 ### Fix
