@@ -1,3 +1,9 @@
+## v0.1.11 (2023-09-04)
+
+### Fix
+
+- **config**: Token file path value needed to have a None default value to be able to also set the value later
+
 ## v0.1.10 (2023-09-04)
 
 ### Fix
