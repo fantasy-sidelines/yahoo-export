@@ -55,6 +55,7 @@ class Config(BaseSettings):
     yahoo_consumer_key: SecretStr = SecretStr("")
     yahoo_consumer_secret: SecretStr = SecretStr("")
     token_file_path: str | None = None
+    data_cache_path: str | None = None
     yahoo_base_url: HttpUrl = HttpUrl("https://fantasysports.yahooapis.com/fantasy/v2/")
     authorize_endpoint: HttpUrl = HttpUrl("https://api.login.yahoo.com/oauth2/request_auth")
     access_token_endpoint: HttpUrl = HttpUrl("https://api.login.yahoo.com/oauth2/get_token")
