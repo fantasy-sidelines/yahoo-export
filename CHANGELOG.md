@@ -1,3 +1,9 @@
+## v0.1.12 (2023-09-05)
+
+### Fix
+
+- **config**: Added data_cache_path default value as it's needed for initializing the config values
+
 ## v0.1.11 (2023-09-04)
 
 ### Fix
