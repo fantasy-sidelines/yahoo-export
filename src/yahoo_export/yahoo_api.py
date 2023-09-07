@@ -27,6 +27,7 @@ class YahooAPI:
             authorize_endpoint=YahooEndpoints.AUTHORIZE_ENDPOINT.value,
             token_endpoint=YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
         )
+        self._token = {}
         self.requests = 0
 
     def __get_token(self) -> None:
