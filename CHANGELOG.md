@@ -1,3 +1,9 @@
+## v0.1.13 (2023-09-07)
+
+### Fix
+
+- **api**: Defined variable in __init__ as it created a problem accessing the api for the first time
+
 ## v0.1.12 (2023-09-05)
 
 ### Fix
