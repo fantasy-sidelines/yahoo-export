@@ -5,5 +5,5 @@ import logging
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-from yahoo_export.utils.config import config
+from yahoo_export.utils.config import Config
 from yahoo_export.yahoo_api import YahooAPI

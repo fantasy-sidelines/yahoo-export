@@ -117,6 +117,3 @@ class Config(BaseSettings):
             file_secret_settings,
             dotenv_settings,
         )
-
-
-config = Config()  # type: ignore

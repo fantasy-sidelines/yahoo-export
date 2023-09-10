@@ -12,14 +12,14 @@ from ratelimit import limits, sleep_and_retry
 from requests import Response
 from requests.exceptions import HTTPError
 
-from yahoo_export.utils.config import config
+from yahoo_export.utils.config import Config
 from yahoo_export.utils.utils import YahooEndpoints, mkdir_not_exists
 
 mkdir_not_exists("secrets")
 
 
 class YahooAPI:
-    def __init__(self) -> None:
+    def __init__(self, config: Config) -> None:
         self._session = requests.Session()
         self._client = OAuth2Session(
             config.yahoo_consumer_key.get_secret_value(),
@@ -29,10 +29,11 @@ class YahooAPI:
         )
         self._token = {}
         self.requests = 0
+        self.config = config
 
     def __get_token(self) -> None:
-        if Path(config.token_file_path).is_file():
-            with open(config.token_file_path) as file:
+        if Path(self.config.token_file_path).is_file():
+            with open(self.config.token_file_path) as file:
                 self._token = yaml.load(file, Loader=yaml.SafeLoader)
             self.__ensure_active_token()
 
@@ -45,21 +46,21 @@ class YahooAPI:
             code_verifier = input(f"AUTH URL:\n\t{authorization_response} \nCode verifier from url: ")
             self._token["token_time"] = round(time.time())
             self._token["state"] = self._state
-            self._token["client_id"] = config.yahoo_consumer_key.get_secret_value()
-            self._token["client_secret"] = config.yahoo_consumer_secret.get_secret_value()
+            self._token["client_id"] = self.config.yahoo_consumer_key.get_secret_value()
+            self._token["client_secret"] = self.config.yahoo_consumer_secret.get_secret_value()
 
             self._token.update(
                 self._client.fetch_token(
                     YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
                     authorization_response=authorization_response,
                     grant_type="authorization_code",
-                    headers=config.headers.model_dump(),
+                    headers=self.config.headers.model_dump(),
                     redirect_uri=YahooEndpoints.REDIRECT_ENDPOINT.value,
                     code=code_verifier,
                 )
             )
 
-            with open(config.token_file_path, "w") as file:
+            with open(self.config.token_file_path, "w") as file:
                 yaml.dump(self._token, file)
 
     def __ensure_active_token(self) -> None:
@@ -75,12 +76,12 @@ class YahooAPI:
                 self._client.refresh_token(
                     YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
                     refresh_token=self._token["refresh_token"],
-                    headers=config.headers.model_dump(),
+                    headers=self.config.headers.model_dump(),
                 )
             )
             self._token.update(auth_creds)
 
-            with open(config.token_file_path, "w") as file:
+            with open(self.config.token_file_path, "w") as file:
                 yaml.dump(self._token, file)
 
     def get_oauth_token(self) -> dict[str, str]:
@@ -91,7 +92,7 @@ class YahooAPI:
     @limits(calls=3, period=4)
     def _query(self, endpoint_url: str, params: dict[str, str] | None = None) -> Response:
         if not params:
-            params = {"format": config.output_format}
+            params = {"format": self.config.output_format}
         try:
             auth_token = self.get_oauth_token()
             response = self._session.get(url=endpoint_url, auth=auth_token, params=params)
@@ -149,7 +150,7 @@ class YahooAPI:
 
     def get_all_game_keys(self) -> tuple[Response, str | datetime]:
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.ALL_GAME_KEYS.value
-        query_url = query_url.format(game_code=config.game_code)
+        query_url = query_url.format(game_code=self.config.game_code)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
@@ -184,7 +185,7 @@ class YahooAPI:
         return response, query_timestamp
 
     def get_league_matchup(self, league_key: str, week: int | None = None) -> tuple[Response, str | datetime]:
-        chosen_week = str(week) if week else str(config.current_nfl_week)
+        chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_MATCHUPS.value
         )
@@ -214,7 +215,7 @@ class YahooAPI:
         return response, query_timestamp
 
     def get_roster(self, team_key_list: list[str], week: int | None = None) -> tuple[Response, str | datetime]:
-        chosen_week = str(week) if week else str(config.current_nfl_week)
+        chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.TEAMS.value + YahooEndpoints.TEAMS_ROSTER.value
         query_url = query_url.format(team_key_list=",".join(team_key_list), week=chosen_week)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
@@ -248,7 +249,7 @@ class YahooAPI:
     def get_player_stat(
         self, league_key: str, player_key_list: list[str], week: int | None = None
     ) -> tuple[Response, str | datetime]:
-        chosen_week = str(week) if week else str(config.current_nfl_week)
+        chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.PLAYERS.value + YahooEndpoints.PLAYERS_STATS.value
         )
@@ -260,7 +261,7 @@ class YahooAPI:
     def get_player_pct_owned(
         self, league_key: str, player_key_list: list[str], week: int | None = None
     ) -> tuple[Response, str | datetime]:
-        chosen_week = str(week) if week else str(config.current_nfl_week)
+        chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.PLAYERS.value
