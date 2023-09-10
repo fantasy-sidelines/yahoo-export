@@ -1,3 +1,9 @@
+## v1.0.0 (2023-09-10)
+
+### Feat
+
+- **config**: updated config to have more user control
+
 ## v0.1.13 (2023-09-07)
 
 ### Fix
