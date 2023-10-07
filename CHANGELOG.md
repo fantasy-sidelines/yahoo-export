@@ -1,3 +1,9 @@
+## v1.0.1 (2023-10-07)
+
+### Fix
+
+- **config-class-fix-for-setting-secret-values**: Allowing users to set secret values through code instead of only config files
+
 ## v1.0.0 (2023-09-10)
 
 ### Feat
