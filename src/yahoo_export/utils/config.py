@@ -68,21 +68,21 @@ class Config(BaseSettings):
 
     @computed_field
     @property
-    def encoded_credentials(self) -> Any:
+    def _encoded_credentials(self) -> Any:
         return base64.b64encode(
             f"{self.yahoo_consumer_key.get_secret_value()}:{self.yahoo_consumer_secret.get_secret_value()}".encode()
         )
 
     @computed_field
     @property
-    def token_file_path(self) -> Any:
+    def token_file_path_resolved(self) -> Any:
         if self.token_file_path is None:
             return str(Path("secrets/oauth_token.yaml").as_posix())
         return self.token_file_path
 
     @computed_field
     @property
-    def data_cache_path(self) -> Any:
+    def data_cache_path_resolved(self) -> Any:
         if self.data_cache_path is None:
             data_cache_path = str((Path.cwd() / "data_cache").as_posix())
         else:
@@ -96,7 +96,7 @@ class Config(BaseSettings):
         headers = OAuthHeaders(
             **{
                 "accept": f"application/{self.output_format}",
-                "authorization": f"Basic {self.encoded_credentials.decode()}",
+                "authorization": f"Basic {self._encoded_credentials.decode()}",
                 "content_type": "application/x-www-form-urlencoded",
             }
         )

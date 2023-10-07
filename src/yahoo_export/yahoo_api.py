@@ -13,27 +13,26 @@ from requests import Response
 from requests.exceptions import HTTPError
 
 from yahoo_export.utils.config import Config
-from yahoo_export.utils.utils import YahooEndpoints, mkdir_not_exists
-
-mkdir_not_exists("secrets")
+from yahoo_export.utils.utils import YahooEndpoints
 
 
 class YahooAPI:
     def __init__(self, config: Config) -> None:
         self._session = requests.Session()
+        self.config = config
         self._client = OAuth2Session(
-            config.yahoo_consumer_key.get_secret_value(),
-            config.yahoo_consumer_secret.get_secret_value(),
+            self.config.yahoo_consumer_key.get_secret_value(),
+            self.config.yahoo_consumer_secret.get_secret_value(),
             authorize_endpoint=YahooEndpoints.AUTHORIZE_ENDPOINT.value,
             token_endpoint=YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
         )
         self._token = {}
         self.requests = 0
-        self.config = config
+        self.start_time = time.time()
 
     def __get_token(self) -> None:
-        if Path(self.config.token_file_path).is_file():
-            with open(self.config.token_file_path) as file:
+        if Path(self.config.token_file_path_resolved).is_file():
+            with open(self.config.token_file_path_resolved) as file:
                 self._token = yaml.load(file, Loader=yaml.SafeLoader)
             self.__ensure_active_token()
 
@@ -60,7 +59,7 @@ class YahooAPI:
                 )
             )
 
-            with open(self.config.token_file_path, "w") as file:
+            with open(self.config.token_file_path_resolved, "w") as file:
                 yaml.dump(self._token, file)
 
     def __ensure_active_token(self) -> None:
@@ -81,21 +80,23 @@ class YahooAPI:
             )
             self._token.update(auth_creds)
 
-            with open(self.config.token_file_path, "w") as file:
+            with open(self.config.token_file_path_resolved, "w") as file:
                 yaml.dump(self._token, file)
 
-    def get_oauth_token(self) -> dict[str, str]:
+    def get_oauth_token(self) -> OAuth2Auth:
         self.__get_token()
         return OAuth2Auth(self._token)
 
     @sleep_and_retry
     @limits(calls=3, period=4)
-    def _query(self, endpoint_url: str, params: dict[str, str] | None = None) -> Response:
+    def _query(self, endpoint_url: str, params: dict[str, str] | None = None) -> Response | dict[str, str]:
         if not params:
             params = {"format": self.config.output_format}
+
+        auth_token = self.get_oauth_token()
+        response = self._session.get(url=endpoint_url, auth=auth_token, params=params)
+
         try:
-            auth_token = self.get_oauth_token()
-            response = self._session.get(url=endpoint_url, auth=auth_token, params=params)
             self.requests += 1
             # check status code first or raise for status?
             response.raise_for_status()
@@ -125,7 +126,7 @@ class YahooAPI:
             else:
                 http_err_msg = f"HTTP Error while attempting to query Yahoo API endopoint: {endpoint_url}."
                 logging.info(
-                    f"Total Requests = {self.requests}, Time to complete = {(time.time()-self.start_time):0.2f}"
+                    f"Total Requests = {self.requests}, Time to complete = {(time.time()-self.start_time):0.2f} seconds"
                 )
                 logging.error(
                     "HTTP Error while attempting to query Yahoo API endopoint: %s\n%s\n%s",
@@ -148,14 +149,14 @@ class YahooAPI:
             err_msg = f"Error while attempting to query Yahoo API endopoint: {endpoint_url}."
             raise HTTPError(err_msg) from err
 
-    def get_all_game_keys(self) -> tuple[Response, str | datetime]:
+    def get_all_game_keys(self) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.ALL_GAME_KEYS.value
         query_url = query_url.format(game_code=self.config.game_code)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_game(self, game_key: int | str) -> tuple[Response, str | datetime]:
+    def get_game(self, game_key: int | str) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.GAMES.value + YahooEndpoints.GAMES_PRESEASON.value
         )
@@ -164,7 +165,7 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_league_preseason(self, league_key: str) -> tuple[Response, str | datetime]:
+    def get_league_preseason(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_PRESEASON.value
         )
@@ -173,7 +174,7 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_league_draft_result(self, league_key: str) -> tuple[Response, str | datetime]:
+    def get_league_draft_result(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.LEAGUES.value
@@ -184,7 +185,9 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_league_matchup(self, league_key: str, week: int | None = None) -> tuple[Response, str | datetime]:
+    def get_league_matchup(
+        self, league_key: str, week: int | None = None
+    ) -> tuple[Response | dict[str, str], str | datetime]:
         chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_MATCHUPS.value
@@ -194,7 +197,7 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_league_transaction(self, league_key: str) -> tuple[Response, str | datetime]:
+    def get_league_transaction(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.LEAGUES.value
@@ -205,7 +208,7 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_league_offseason(self, league_key: str) -> tuple[Response, str | datetime]:
+    def get_league_offseason(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_OFFSEASON.value
         )
@@ -214,7 +217,9 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_roster(self, team_key_list: list[str], week: int | None = None) -> tuple[Response, str | datetime]:
+    def get_roster(
+        self, team_key_list: list[str], week: int | None = None
+    ) -> tuple[Response | dict[str, str], str | datetime]:
         chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.TEAMS.value + YahooEndpoints.TEAMS_ROSTER.value
         query_url = query_url.format(team_key_list=",".join(team_key_list), week=chosen_week)
@@ -235,7 +240,9 @@ class YahooAPI:
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
 
-    def get_player_draft_analysis(self, league_key: str, player_key_list: list[str]) -> tuple[Response, str | datetime]:
+    def get_player_draft_analysis(
+        self, league_key: str, player_key_list: list[str]
+    ) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.PLAYERS.value
@@ -248,7 +255,7 @@ class YahooAPI:
 
     def get_player_stat(
         self, league_key: str, player_key_list: list[str], week: int | None = None
-    ) -> tuple[Response, str | datetime]:
+    ) -> tuple[Response | dict[str, str], str | datetime]:
         chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.PLAYERS.value + YahooEndpoints.PLAYERS_STATS.value
@@ -260,7 +267,7 @@ class YahooAPI:
 
     def get_player_pct_owned(
         self, league_key: str, player_key_list: list[str], week: int | None = None
-    ) -> tuple[Response, str | datetime]:
+    ) -> tuple[Response | dict[str, str], str | datetime]:
         chosen_week = str(week) if week else str(self.config.current_nfl_week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
