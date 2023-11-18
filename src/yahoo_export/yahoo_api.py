@@ -106,7 +106,7 @@ class YahooAPI:
                 json_err_msg = (
                     f"JSONDecodeError while attempting to decode response from Yahoo API endopoint: {endpoint_url}."
                 )
-                raise HTTPError(json_err_msg) from json_err
+                raise HTTPError(json_err_msg, response=response) from json_err
 
             return json_data
 
@@ -135,19 +135,19 @@ class YahooAPI:
                     response.text,
                     exc_info=True,
                 )
-                raise HTTPError(http_err_msg) from http_err
+                raise HTTPError(http_err_msg, response=response) from http_err
 
         except requests.exceptions.ConnectionError as con_err:
             con_err_msg = f"Connection error while attempting to query Yahoo API endopoint: {endpoint_url}."
-            raise HTTPError(con_err_msg) from con_err
+            raise HTTPError(con_err_msg, response=response) from con_err
 
         except requests.exceptions.Timeout as to_err:
             timeout_err_msg = f"Timeout error while attempting to query Yahoo API endopoint: {endpoint_url}."
-            raise HTTPError(timeout_err_msg) from to_err
+            raise HTTPError(timeout_err_msg, response=response) from to_err
 
         except requests.exceptions.RequestException as err:
             err_msg = f"Error while attempting to query Yahoo API endopoint: {endpoint_url}."
-            raise HTTPError(err_msg) from err
+            raise HTTPError(err_msg, response=response) from err
 
     def get_all_game_keys(self) -> tuple[Response | dict[str, str], str | datetime]:
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.ALL_GAME_KEYS.value
