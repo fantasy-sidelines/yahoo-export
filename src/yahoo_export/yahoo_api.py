@@ -260,7 +260,11 @@ class YahooAPI:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.PLAYERS.value + YahooEndpoints.PLAYERS_STATS.value
         )
-        query_url = query_url.format(league_key=league_key, player_key_list=",".join(player_key_list), week=chosen_week)
+        query_url = query_url.format(
+            league_key=league_key,
+            player_key_list=",".join(player_key_list),
+            week=chosen_week,
+        )
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
@@ -274,7 +278,11 @@ class YahooAPI:
             + YahooEndpoints.PLAYERS.value
             + YahooEndpoints.PLAYERS_PERCENT_OWNED.value
         )
-        query_url = query_url.format(league_key=league_key, player_key_list=",".join(player_key_list), week=chosen_week)
+        query_url = query_url.format(
+            league_key=league_key,
+            player_key_list=",".join(player_key_list),
+            week=chosen_week,
+        )
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
         return response, query_timestamp
