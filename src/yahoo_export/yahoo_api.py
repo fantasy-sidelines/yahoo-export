@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
+from typing import Any
 
 import pytz
 import requests
@@ -12,8 +13,7 @@ from ratelimit import limits, sleep_and_retry
 from requests import Response
 from requests.exceptions import HTTPError
 
-from yahoo_export.utils.config import Config
-from yahoo_export.utils.utils import YahooEndpoints
+from yahoo_export.utils.utils import Config, YahooEndpoints
 
 
 class YahooAPI:
@@ -89,7 +89,7 @@ class YahooAPI:
 
     @sleep_and_retry
     @limits(calls=3, period=4)
-    def _query(self, endpoint_url: str, params: dict[str, str] | None = None) -> Response | dict[str, str]:
+    def _query(self, endpoint_url: str, params: dict[str, str] | None = None) -> dict[Any, Any]:
         if not params:
             params = {"format": self.config.output_format}
 
@@ -102,13 +102,13 @@ class YahooAPI:
             response.raise_for_status()
             try:
                 json_data = response.json()
+                return json_data
+
             except JSONDecodeError as json_err:
                 json_err_msg = (
                     f"JSONDecodeError while attempting to decode response from Yahoo API endopoint: {endpoint_url}."
                 )
                 raise HTTPError(json_err_msg, response=response) from json_err
-
-            return json_data
 
         except requests.exceptions.HTTPError as http_err:
             if (
@@ -149,32 +149,32 @@ class YahooAPI:
             err_msg = f"Error while attempting to query Yahoo API endopoint: {endpoint_url}."
             raise HTTPError(err_msg, response=response) from err
 
-    def get_all_game_keys(self) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_all_game_keys(self) -> tuple[dict[Any, Any], str]:
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.ALL_GAME_KEYS.value
         query_url = query_url.format(game_code=self.config.game_code)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_game(self, game_key: int | str) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_game(self, game_key: int | str) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.GAMES.value + YahooEndpoints.GAMES_PRESEASON.value
         )
         query_url = query_url.format(game_key=str(game_key))
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_league_preseason(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_league_preseason(self, league_key: str) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_PRESEASON.value
         )
         query_url = query_url.format(league_key=league_key)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_league_draft_result(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_league_draft_result(self, league_key: str) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.LEAGUES.value
@@ -183,21 +183,19 @@ class YahooAPI:
         query_url = query_url.format(league_key=league_key)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_league_matchup(
-        self, league_key: str, week: int | None = None
-    ) -> tuple[Response | dict[str, str], str | datetime]:
-        chosen_week = str(week) if week else str(self.config.current_nfl_week)
+    def get_league_matchup(self, league_key: str, week: int | None = None) -> tuple[dict[Any, Any], str]:
+        chosen_week = str(week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_MATCHUPS.value
         )
         query_url = query_url.format(league_key=league_key, week=chosen_week)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_league_transaction(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_league_transaction(self, league_key: str) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.LEAGUES.value
@@ -206,26 +204,24 @@ class YahooAPI:
         query_url = query_url.format(league_key=league_key)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_league_offseason(self, league_key: str) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_league_offseason(self, league_key: str) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.LEAGUES.value + YahooEndpoints.LEAGUES_OFFSEASON.value
         )
         query_url = query_url.format(league_key=league_key)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_roster(
-        self, team_key_list: list[str], week: int | None = None
-    ) -> tuple[Response | dict[str, str], str | datetime]:
-        chosen_week = str(week) if week else str(self.config.current_nfl_week)
+    def get_roster(self, team_key_list: list[str], week: int | None = None) -> tuple[dict[Any, Any], str]:
+        chosen_week = str(week)
         query_url = YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.TEAMS.value + YahooEndpoints.TEAMS_ROSTER.value
         query_url = query_url.format(team_key_list=",".join(team_key_list), week=chosen_week)
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
     def get_player(
         self, league_key: str, start_count: int = 0, retrieval_limit: int = 25
@@ -238,11 +234,9 @@ class YahooAPI:
         )
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
-    def get_player_draft_analysis(
-        self, league_key: str, player_key_list: list[str]
-    ) -> tuple[Response | dict[str, str], str | datetime]:
+    def get_player_draft_analysis(self, league_key: str, player_key_list: list[str]) -> tuple[dict[Any, Any], str]:
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.PLAYERS.value
@@ -251,12 +245,12 @@ class YahooAPI:
         query_url = query_url.format(league_key=league_key, player_key_list=",".join(player_key_list))
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
     def get_player_stat(
         self, league_key: str, player_key_list: list[str], week: int | None = None
-    ) -> tuple[Response | dict[str, str], str | datetime]:
-        chosen_week = str(week) if week else str(self.config.current_nfl_week)
+    ) -> tuple[dict[Any, Any], str]:
+        chosen_week = str(week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value + YahooEndpoints.PLAYERS.value + YahooEndpoints.PLAYERS_STATS.value
         )
@@ -267,12 +261,12 @@ class YahooAPI:
         )
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore
 
     def get_player_pct_owned(
         self, league_key: str, player_key_list: list[str], week: int | None = None
-    ) -> tuple[Response | dict[str, str], str | datetime]:
-        chosen_week = str(week) if week else str(self.config.current_nfl_week)
+    ) -> tuple[dict[Any, Any], str]:
+        chosen_week = str(week)
         query_url = (
             YahooEndpoints.BASE_ENDPOINT.value
             + YahooEndpoints.PLAYERS.value
@@ -285,4 +279,4 @@ class YahooAPI:
         )
         query_timestamp = datetime.now(pytz.utc).strftime("%Y-%m-%d_%H-%M-%ST%z")
         response = self._query(endpoint_url=query_url)
-        return response, query_timestamp
+        return response, query_timestamp  # type: ignore

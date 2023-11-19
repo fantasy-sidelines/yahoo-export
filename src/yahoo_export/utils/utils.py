@@ -1,6 +1,53 @@
+import base64
 from collections import deque
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Any
+
+from pydantic import SecretStr, computed_field
+
+
+@dataclass
+class OAuthHeaders:
+    accept: str
+    authorization: str
+    content_type: str
+
+
+@dataclass
+class Config:
+    yahoo_consumer_key: SecretStr
+    yahoo_consumer_secret: SecretStr
+    token_file_path: str
+    game_code: str = "nfl"
+    output_format: str = "json"
+
+    @computed_field
+    @property
+    def _encoded_credentials(self) -> Any:
+        return base64.b64encode(
+            f"{self.yahoo_consumer_key.get_secret_value()}:{self.yahoo_consumer_secret.get_secret_value()}".encode()
+        )
+
+    @computed_field
+    @property
+    def token_file_path_resolved(self) -> Any:
+        if self.token_file_path is None:
+            token_file_path = Path("secrets/oauth_token.yaml")
+            mkdir_not_exists(token_file_path.parent.as_posix())
+            return token_file_path.as_posix()
+        return self.token_file_path
+
+    @computed_field
+    @property
+    def headers(self) -> Any:
+        headers = OAuthHeaders(
+            accept=f"application/{self.output_format}",
+            authorization=f"Basic {self._encoded_credentials.decode()}",
+            content_type="application/x-www-form-urlencoded",
+        )
+        return headers
 
 
 def mkdir_not_exists(dir_name: str) -> None:
