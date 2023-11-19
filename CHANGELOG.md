@@ -1,3 +1,9 @@
+## v2.0.0 (2023-11-19)
+
+### Fix
+
+- **config**: error with config use
+
 ## v1.0.2 (2023-11-18)
 
 ### Fix
