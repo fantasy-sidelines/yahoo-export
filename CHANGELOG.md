@@ -1,3 +1,9 @@
+## v3.0.1 (2023-11-19)
+
+### Fix
+
+- **bug**: Dataclass does not use model_dump and needed to be changed to asdict()
+
 ## v3.0.0 (2023-11-19)
 
 ### Feat
