@@ -1,3 +1,9 @@
+## v3.0.0 (2023-11-19)
+
+### Feat
+
+- **config**: config dependency changes
+
 ## v2.0.0 (2023-11-19)
 
 ### Fix
