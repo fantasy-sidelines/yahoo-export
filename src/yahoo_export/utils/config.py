@@ -2,45 +2,45 @@ import base64
 from pathlib import Path
 from typing import Any
 
-import yaml
+# import yaml
 from pydantic import BaseModel, HttpUrl, SecretStr, computed_field
-from pydantic.fields import FieldInfo
-from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
+
+# from pydantic.fields import FieldInfo
+from pydantic_settings import BaseSettings  # , PydanticBaseSettingsSource, SettingsConfigDict
 
 from yahoo_export.utils.utils import mkdir_not_exists
 
+# class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
+#     def get_field_value(
+#         self,
+#         field: FieldInfo,
+#         field_name: str,
+#     ) -> tuple[Any, str, bool]:
+#         encoding = self.config.get("env_file_encoding")
+#         with open(Path("yahoo_export_config.yaml")) as yaml_file:
+#             file_content_yaml = yaml.load(yaml_file, Loader=yaml.SafeLoader)
+#         field_value = file_content_yaml.get(field_name)
+#         return field_value, field_name, False
 
-class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
-    def get_field_value(
-        self,
-        field: FieldInfo,  # noqa: ARG002
-        field_name: str,
-    ) -> tuple[Any, str, bool]:
-        encoding = self.config.get("env_file_encoding")  # noqa: F841
-        with open(Path("yahoo_export_config.yaml")) as yaml_file:
-            file_content_yaml = yaml.load(yaml_file, Loader=yaml.SafeLoader)
-        field_value = file_content_yaml.get(field_name)
-        return field_value, field_name, False
+#     def prepare_field_value(
+#         self,
+#         field_name: str,
+#         field: FieldInfo,
+#         value: Any,
+#         value_is_complex: bool,
+#     ) -> Any:
+#         return value
 
-    def prepare_field_value(
-        self,
-        field_name: str,  # noqa: ARG002
-        field: FieldInfo,  # noqa: ARG002
-        value: Any,
-        value_is_complex: bool,  # noqa: ARG002, FBT001
-    ) -> Any:
-        return value
+#     def __call__(self) -> dict[str, Any]:
+#         d: dict[str, Any] = {}
 
-    def __call__(self) -> dict[str, Any]:
-        d: dict[str, Any] = {}
+#         for field_name, field in self.settings_cls.model_fields.items():
+#             field_value, field_key, value_is_complex = self.get_field_value(field, field_name)
+#             field_value = self.prepare_field_value(field_name, field, field_value, value_is_complex)
+#             if field_value is not None:
+#                 d[field_key] = field_value
 
-        for field_name, field in self.settings_cls.model_fields.items():
-            field_value, field_key, value_is_complex = self.get_field_value(field, field_name)
-            field_value = self.prepare_field_value(field_name, field, field_value, value_is_complex)
-            if field_value is not None:
-                d[field_key] = field_value
-
-        return d
+#         return d
 
 
 # @dataclass
@@ -51,7 +51,7 @@ class OAuthHeaders(BaseModel):
 
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(env_file_encoding="utf-8", secrets_dir="secrets")
+    # model_config = SettingsConfigDict(env_file_encoding="utf-8", secrets_dir="secrets")
     yahoo_consumer_key: SecretStr = SecretStr("")
     yahoo_consumer_secret: SecretStr = SecretStr("")
     token_file_path: str | None = None
@@ -102,18 +102,18 @@ class Config(BaseSettings):
         )
         return headers
 
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,  # noqa: ARG003
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
-    ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (
-            YAMLConfigSettingsSource(settings_cls),
-            env_settings,
-            file_secret_settings,
-            dotenv_settings,
-        )
+    # @classmethod
+    # def settings_customise_sources(
+    #     cls,
+    #     settings_cls: type[BaseSettings],
+    #     init_settings: PydanticBaseSettingsSource,
+    #     env_settings: PydanticBaseSettingsSource,
+    #     dotenv_settings: PydanticBaseSettingsSource,
+    #     file_secret_settings: PydanticBaseSettingsSource,
+    # ) -> tuple[PydanticBaseSettingsSource, ...]:
+    #     return (
+    #         # YAMLConfigSettingsSource(settings_cls),
+    #         env_settings,
+    #         file_secret_settings,
+    #         dotenv_settings,
+    #     )
