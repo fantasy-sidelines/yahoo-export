@@ -1,5 +1,6 @@
 import logging
 import time
+from dataclasses import asdict
 from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
@@ -53,7 +54,7 @@ class YahooAPI:
                     YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
                     authorization_response=authorization_response,
                     grant_type="authorization_code",
-                    headers=self.config.headers.model_dump(),
+                    headers=asdict(self.config.headers),
                     redirect_uri=YahooEndpoints.REDIRECT_ENDPOINT.value,
                     code=code_verifier,
                 )
@@ -75,7 +76,7 @@ class YahooAPI:
                 self._client.refresh_token(
                     YahooEndpoints.ACCESS_TOKEN_ENDPOINT.value,
                     refresh_token=self._token["refresh_token"],
-                    headers=self.config.headers.model_dump(),
+                    headers=asdict(self.config.headers),
                 )
             )
             self._token.update(auth_creds)
